@@ -1,5 +1,7 @@
 package com.example.controlaccidentes;
 
+import static java.util.Calendar.DAY_OF_MONTH;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -15,7 +17,6 @@ import java.util.Locale;
 
 public class registroInsidente extends AppCompatActivity {
     EditText editTextFecha;
-    Calendar   calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +30,12 @@ public class registroInsidente extends AppCompatActivity {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 calendar.set(Calendar.YEAR,year);
                 calendar.set(Calendar.MONTH, month);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                calendar.set(DAY_OF_MONTH, dayOfMonth);
 
                 updateCalendar();
             }
             private void updateCalendar() {
-                String Format = "MM/DD/YY";
+                String Format = "MM/dd/yy";
                 SimpleDateFormat sdf = new SimpleDateFormat(Format, Locale.US);
 
                 editTextFecha.setText(sdf.format(calendar.getTime()));
@@ -44,7 +45,7 @@ public class registroInsidente extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                new DatePickerDialog(registroInsidente.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(registroInsidente.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(DAY_OF_MONTH)).show();
 
             }
         });
