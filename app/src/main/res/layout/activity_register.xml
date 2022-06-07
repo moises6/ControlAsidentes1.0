@@ -113,7 +113,7 @@
                 android:layout_marginEnd="12dp"
                 android:layout_marginBottom="32dp"
                 android:text="Registrar Administrador"
-                app:layout_constraintBottom_toTopOf="@+id/registerBtn"
+                app:layout_constraintBottom_toTopOf="@+id/RegresarEmpleado"
                 app:layout_constraintEnd_toStartOf="@+id/empleado"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/registerPhone" />
@@ -126,14 +126,14 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="32dp"
                 android:text="Registrar Cliente"
-                app:layout_constraintBottom_toTopOf="@+id/registerBtn"
+                app:layout_constraintBottom_toTopOf="@+id/RegresarEmpleado"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.422"
                 app:layout_constraintStart_toEndOf="@+id/administrador"
                 app:layout_constraintTop_toBottomOf="@+id/registerPhone" />
 
             <Button
-                android:id="@+id/registerBtn"
+                android:id="@+id/RegresarEmpleado"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -156,7 +156,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/registerBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/RegresarEmpleado" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

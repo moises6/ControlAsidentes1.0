@@ -24,7 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
 
 public class Register extends AppCompatActivity {
     EditText fullName, email, password, phone;
@@ -50,7 +49,7 @@ public class Register extends AppCompatActivity {
         email = findViewById(R.id.registerEmail);
         password = findViewById(R.id.registerPassword);
         phone = findViewById(R.id.registerPhone);
-        registerBtn = findViewById(R.id.registerBtn);
+        registerBtn = findViewById(R.id.RegresarEmpleado);
         goToLogin = findViewById(R.id.gotoLogin);
 
         fAuth = FirebaseAuth.getInstance();
