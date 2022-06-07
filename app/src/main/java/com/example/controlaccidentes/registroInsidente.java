@@ -2,15 +2,10 @@ package com.example.controlaccidentes;
 
 import static java.util.Calendar.DAY_OF_MONTH;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -20,19 +15,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.example.controlaccidentes.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -43,25 +40,25 @@ public class registroInsidente extends AppCompatActivity {
     public Uri imageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-
+    ActivityMainBinding binding;
+    
+    
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_insidente);
-        imagepic = findViewById(R.id.imagepic);
+        imagepic = findViewById(R.id.firebaseimage);
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        imagepic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ElegirFoto();
-            }
-        });
+        
 
 
-        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.RegistroAccidente);
+
+
+        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.selectImagebtn);
         AnimationDrawable animationDrawable = (AnimationDrawable) constraintLayout.getBackground();
         animationDrawable.setEnterFadeDuration(2000);
         animationDrawable.setExitFadeDuration(4000);
@@ -106,53 +103,90 @@ public class registroInsidente extends AppCompatActivity {
         });
     }
 
-    private void ElegirFoto() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent,1);
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
-            imageUri = data.getData();
-            imagepic.setImageURI(imageUri);
-            uploadPicture();
+        binding.selectImagebtn.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+
+            selectImage();
+
+
         }
-    }
+    });
 
-    private void uploadPicture() {
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setTitle("UploadingImage ...");
-        pd.show();
+        binding.uploadimagebtn.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
 
-        final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("images/" + randomKey);
 
-        riversRef.putFile(imageUri)
+            uploadImage();
+
+        }
+    });
+
+}
+
+    private void uploadImage() {
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Uploading File....");
+        progressDialog.show();
+
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
+        Date now = new Date();
+        String fileName = formatter.format(now);
+        storageReference = FirebaseStorage.getInstance().getReference("images/"+fileName);
+
+
+        storageReference.putFile(imageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        pd.dismiss();
-                        Snackbar.make(findViewById(android.R.id.content), "Image Uploaded.", Snackbar.LENGTH_LONG).show();
+
+                        binding.firebaseimage.setImageURI(null);
+                        Toast.makeText(registroInsidente.this,"Successfully Uploaded",Toast.LENGTH_SHORT).show();
+                        if (progressDialog.isShowing())
+                            progressDialog.dismiss();
+
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
                     @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        pd.dismiss();
-                        Toast.makeText(getApplicationContext(), "Failed To Upload", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                        double progressPercent = (100.00 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
-                        pd.setMessage("Progress" + (int) progressPercent + "%");
+                    public void onFailure(@NonNull Exception e) {
+
+
+                        if (progressDialog.isShowing())
+                            progressDialog.dismiss();
+                        Toast.makeText(registroInsidente.this,"Failed to Upload",Toast.LENGTH_SHORT).show();
+
+
                     }
                 });
+
     }
 
+    private void selectImage() {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent,100);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 100 && data != null && data.getData() != null){
+
+            imageUri = data.getData();
+            binding.firebaseimage.setImageURI(imageUri);
+
+
+        }
+    }
 }
+
+

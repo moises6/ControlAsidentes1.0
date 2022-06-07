@@ -1,20 +1,21 @@
 package com.example.controlaccidentes;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private  static int SPLASH_SCREEN = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,5 +46,11 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        new Handler().postDelayed((Runnable) () -> {
+            Intent intent = new Intent(MainActivity.this, Login .class );
+
+
+        },SPLASH_SCREEN);
     }
 }
