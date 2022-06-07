@@ -11,26 +11,40 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="53dp"
         android:text="Cerrar Sension"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButtonAccident"
+        android:layout_width="130dp"
+        android:layout_height="115dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="261dp"
+        android:layout_marginBottom="400dp"
+        android:autofillHints="Accidents"
+        app:layout_constraintBottom_toTopOf="@+id/bntCerrarSencion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:srcCompat="@drawable/accident" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="148dp"
-        android:layout_marginTop="270dp"
-        android:layout_marginEnd="168dp"
-        android:layout_marginBottom="340dp"
-        android:text="Usuario normal"
-        app:layout_constraintBottom_toTopOf="@+id/bntCerrarSencion"
+        android:layout_marginStart="51dp"
+        android:layout_marginTop="86dp"
+        android:layout_marginEnd="289dp"
+        android:text="Accidents"
+        android:textColor="#070707"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
