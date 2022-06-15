@@ -1,191 +1,277 @@
 package com.example.controlaccidentes;
 
-import static java.util.Calendar.DAY_OF_MONTH;
-
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.controlaccidentes.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
-import javax.annotation.Nullable;
-
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class registroInsidente extends AppCompatActivity {
-    EditText editTextFecha;
-    private ImageView imagepic;
-    public Uri imageUri;
-    private FirebaseStorage storage;
-    private StorageReference storageReference;
-    ActivityMainBinding binding;
-    
-    
+
+    ImageView photo_pet;
+    Button btn_add;
+    Button btn_cu_photo, btn_r_photo;
+    LinearLayout linearLayout_image_btn;
+    EditText name, age, color, precio_vacuna;
+    private FirebaseFirestore mfirestore;
+    private FirebaseAuth mAuth;
+
+    StorageReference storageReference;
+    String storage_path = "Insidentes/*";
+
+    private static final int COD_SEL_STORAGE = 200;
+    private static final int COD_SEL_IMAGE = 300;
+
+    private Uri image_url;
+    String photo = "photo";
+    String idd;
+
     ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro_insidente);
-        imagepic = findViewById(R.id.firebaseimage);
-
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
-
-        
-
-
-
-
-        ConstraintLayout constraintLayout = (ConstraintLayout) findViewById(R.id.selectImagebtn);
-        AnimationDrawable animationDrawable = (AnimationDrawable) constraintLayout.getBackground();
-        animationDrawable.setEnterFadeDuration(2000);
-        animationDrawable.setExitFadeDuration(4000);
-        animationDrawable.start();
-
-        Button cerrarEmpleado = findViewById(R.id.RegresarEmpleado);
-        cerrarEmpleado.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                finish();
-            }
-        });
-
-
-        setContentView(R.layout.activity_registro_insidente);
-        editTextFecha = findViewById(R.id.editTimefecha);
-        Calendar calendar = Calendar.getInstance();
-        DatePickerDialog.OnDateSetListener  date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                calendar.set(Calendar.YEAR,year);
-                calendar.set(Calendar.MONTH, month);
-                calendar.set(DAY_OF_MONTH, dayOfMonth);
-
-                updateCalendar();
-            }
-            private void updateCalendar() {
-                String Format = "MM/dd/yy";
-                SimpleDateFormat sdf = new SimpleDateFormat(Format, Locale.US);
-
-                editTextFecha.setText(sdf.format(calendar.getTime()));
-            }
-        };
-        editTextFecha.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                new DatePickerDialog(registroInsidente.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(DAY_OF_MONTH)).show();
-
-            }
-        });
-    }
-
-
-        binding.selectImagebtn.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-
-            selectImage();
-
-
-        }
-    });
-
-        binding.uploadimagebtn.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-
-            uploadImage();
-
-        }
-    });
-
-}
-
-    private void uploadImage() {
-
+        this.setTitle("Mascota");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle("Uploading File....");
-        progressDialog.show();
+        String id = getIntent().getStringExtra("id_pet");
+        mfirestore = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
+        linearLayout_image_btn = findViewById(R.id.images_btn);
+        name = findViewById(R.id.nombre);
+        age = findViewById(R.id.edad);
+        color = findViewById(R.id.color);
+        precio_vacuna = findViewById(R.id.precio_vacuna);
+        photo_pet = findViewById(R.id.insidente_photo);
+        btn_cu_photo = findViewById(R.id.btn_photo);
+        btn_r_photo = findViewById(R.id.btn_remove_photo);
+        btn_add = findViewById(R.id.btn_add);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.CANADA);
-        Date now = new Date();
-        String fileName = formatter.format(now);
-        storageReference = FirebaseStorage.getInstance().getReference("images/"+fileName);
+        btn_cu_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uploadPhoto();
+            }
+        });
 
+        btn_r_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("photo", "");
+                mfirestore.collection("Insidentes").document(idd).update(map);
+                Toast.makeText(registroInsidente.this, "Foto eliminada", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        storageReference.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        if (id == null || id == ""){
+            linearLayout_image_btn.setVisibility(View.GONE);
+            btn_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String namepet = name.getText().toString().trim();
+                    String agepet = age.getText().toString().trim();
+                    String colorpet = color.getText().toString().trim();
+                    Double precio_vacunapet = Double.parseDouble(precio_vacuna.getText().toString().trim());
 
-                        binding.firebaseimage.setImageURI(null);
-                        Toast.makeText(registroInsidente.this,"Successfully Uploaded",Toast.LENGTH_SHORT).show();
-                        if (progressDialog.isShowing())
-                            progressDialog.dismiss();
-
+                    if(namepet.isEmpty() && agepet.isEmpty() && colorpet.isEmpty()){
+                        Toast.makeText(getApplicationContext(), "Ingresar los datos", Toast.LENGTH_SHORT).show();
+                    }else{
+                        postPet(namepet, agepet, colorpet, precio_vacunapet);
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                }
+            });
+        }else{
+            idd = id;
+            btn_add.setText("Update");
+            getPet(id);
+            btn_add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String namepet = name.getText().toString().trim();
+                    String agepet = age.getText().toString().trim();
+                    String colorpet = color.getText().toString().trim();
+                    Double precio_vacunapet = Double.parseDouble(precio_vacuna.getText().toString().trim());
 
-
-                        if (progressDialog.isShowing())
-                            progressDialog.dismiss();
-                        Toast.makeText(registroInsidente.this,"Failed to Upload",Toast.LENGTH_SHORT).show();
-
-
+                    if(namepet.isEmpty() && agepet.isEmpty() && colorpet.isEmpty()){
+                        Toast.makeText(getApplicationContext(), "Ingresar los datos", Toast.LENGTH_SHORT).show();
+                    }else{
+                        updatePet(namepet, agepet, colorpet, precio_vacunapet, id);
                     }
-                });
-
+                }
+            });
+        }
     }
 
-    private void selectImage() {
+    private void uploadPhoto() {
+        Intent i = new Intent(Intent.ACTION_PICK);
+        i.setType("image/*");
 
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent,100);
-
+        startActivityForResult(i, COD_SEL_IMAGE);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 100 && data != null && data.getData() != null){
-
-            imageUri = data.getData();
-            binding.firebaseimage.setImageURI(imageUri);
-
-
+        if(resultCode == RESULT_OK){
+            if (requestCode == COD_SEL_IMAGE){
+                image_url = data.getData();
+                subirPhoto(image_url);
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void subirPhoto(Uri image_url) {
+        progressDialog.setMessage("Actualizando foto");
+        progressDialog.show();
+        String rute_storage_photo = storage_path + "" + photo + "" + mAuth.getUid() +""+ idd;
+        StorageReference reference = storageReference.child(rute_storage_photo);
+        reference.putFile(image_url).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isSuccessful());
+                if (uriTask.isSuccessful()){
+                    uriTask.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String download_uri = uri.toString();
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("photo", download_uri);
+                            mfirestore.collection("Insidentes/*").document(idd).update(map);
+                            Toast.makeText(registroInsidente.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                        }
+                    });
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(registroInsidente.this, "Error al cargar foto", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updatePet(String namepet, String agepet, String colorpet, Double precio_vacunapet, String id) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", namepet);
+        map.put("age", agepet);
+        map.put("color", colorpet);
+        map.put("vaccine_price", precio_vacunapet);
+
+        mfirestore.collection("pet").document(id).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getApplicationContext(), "Actualizado exitosamente", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Error al actualizar", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void postPet(String namepet, String agepet, String colorpet, Double precio_vacunapet) {
+        String idUser = mAuth.getCurrentUser().getUid();
+        DocumentReference id = mfirestore.collection("pet").document();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id_user", idUser);
+        map.put("id", id.getId());
+        map.put("name", namepet);
+        map.put("age", agepet);
+        map.put("color", colorpet);
+        map.put("vaccine_price", precio_vacunapet);
+
+        mfirestore.collection("pet").document(id.getId()).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getApplicationContext(), "Creado exitosamente", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Error al ingresar", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getPet(String id){
+        mfirestore.collection("pet").document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                DecimalFormat format = new DecimalFormat("0.00");
+                String namePet = documentSnapshot.getString("name");
+                String agePet = documentSnapshot.getString("age");
+                String colorPet = documentSnapshot.getString("color");
+                Double precio_vacunapet = documentSnapshot.getDouble("vaccine_price");
+                String photoPet = documentSnapshot.getString("photo");
+
+                name.setText(namePet);
+                age.setText(agePet);
+                color.setText(colorPet);
+                precio_vacuna.setText(format.format(precio_vacunapet));
+                try {
+                    if(!photoPet.equals("")){
+                        Toast toast = Toast.makeText(getApplicationContext(), "Cargando foto", Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.TOP,0,200);
+                        toast.show();
+                        Picasso.with(registroInsidente.this)
+                                .load(photoPet)
+                                .resize(150, 150)
+                                .into(photo_pet);
+                    }
+                }catch (Exception e){
+                    Log.v("Error", "e: " + e);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(), "Error al obtener los datos", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return false;
     }
 }
 

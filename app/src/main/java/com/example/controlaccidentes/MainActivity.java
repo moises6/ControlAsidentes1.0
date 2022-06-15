@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
         animationDrawable.setExitFadeDuration(4000);
         animationDrawable.start();
 
+
+
         ImageButton accidents=findViewById(R.id.imageButtonAccident);
         accidents.setOnClickListener(new View.OnClickListener() {
             @Override
