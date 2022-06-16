@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "90571495832",
-    "project_id": "proyectofinal-bdb08",
-    "storage_bucket": "proyectofinal-bdb08.appspot.com"
+    "project_number": "53968503703",
+    "project_id": "control-de-insidentes",
+    "storage_bucket": "control-de-insidentes.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:90571495832:android:8bdd3c2c8621ff5db7f3ed",
+        "mobilesdk_app_id": "1:53968503703:android:685be98b6386254da13ad2",
         "android_client_info": {
           "package_name": "com.example.controlaccidentes"
         }
       },
       "oauth_client": [
         {
-          "client_id": "90571495832-2v581r2ktm5onbgk0s8v1qsdmngr6ge4.apps.googleusercontent.com",
+          "client_id": "53968503703-d89oc0st2tsvbhojf0socmkfuu1oullc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBNFWtn-mKGzFeCUXvb3soQuOWir46weBc"
+          "current_key": "AIzaSyAVhNhwVAqmuRCmfC14pHc0Z5AdvPwc1CA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "90571495832-2v581r2ktm5onbgk0s8v1qsdmngr6ge4.apps.googleusercontent.com",
+              "client_id": "53968503703-d89oc0st2tsvbhojf0socmkfuu1oullc.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -36,56 +36,27 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:90571495832:android:b9865da117dddc95b7f3ed",
+        "mobilesdk_app_id": "1:53968503703:android:e4b59029addd2f48a13ad2",
         "android_client_info": {
-          "package_name": "com.example.registroaccidentes_android"
+          "package_name": "net.lrivas.insidentes"
         }
       },
       "oauth_client": [
         {
-          "client_id": "90571495832-2v581r2ktm5onbgk0s8v1qsdmngr6ge4.apps.googleusercontent.com",
+          "client_id": "53968503703-d89oc0st2tsvbhojf0socmkfuu1oullc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBNFWtn-mKGzFeCUXvb3soQuOWir46weBc"
+          "current_key": "AIzaSyAVhNhwVAqmuRCmfC14pHc0Z5AdvPwc1CA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "90571495832-2v581r2ktm5onbgk0s8v1qsdmngr6ge4.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:90571495832:android:5cdc9ed45b99a8cfb7f3ed",
-        "android_client_info": {
-          "package_name": "com.smallacademy.userroles"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "90571495832-2v581r2ktm5onbgk0s8v1qsdmngr6ge4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBNFWtn-mKGzFeCUXvb3soQuOWir46weBc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "90571495832-2v581r2ktm5onbgk0s8v1qsdmngr6ge4.apps.googleusercontent.com",
+              "client_id": "53968503703-d89oc0st2tsvbhojf0socmkfuu1oullc.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
